@@ -1,0 +1,36 @@
+name: Update China Futures Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 22 * * 1-5"
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refresh CSV files
+        run: python src/download_futures.py
+
+      - name: Build DuckDB database
+        run: python src/build_duckdb.py
+
+      - name: Upload data artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: china-futures-data
+          path: |
+            data/raw/*.csv
+            data/db/*.duckdb
