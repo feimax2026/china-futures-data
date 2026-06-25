@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import pandas as pd
 
-from src.export_latest_signals import build_payload
+from src.export_latest_signals import build_payload, run_models
 from src.product_config import get_product
 
 
@@ -33,6 +34,23 @@ class ExportLatestSignalsTests(unittest.TestCase):
         self.assertEqual(ten_day["direction"], "bearish")
         self.assertEqual(ten_day["quality"]["samples"], 2)
         self.assertAlmostEqual(ten_day["quality"]["direction_accuracy"], 0.5)
+
+    @patch("src.export_latest_signals.run_dataset")
+    @patch("src.export_latest_signals.product_configs")
+    @patch("src.export_latest_signals.ensure_dirs")
+    def test_run_models_creates_output_directories_on_clean_runner(
+        self,
+        ensure_dirs,
+        product_configs,
+        run_dataset,
+    ) -> None:
+        product_configs.return_value = [SimpleNamespace()]
+        run_dataset.return_value = SimpleNamespace()
+
+        with patch("src.export_latest_signals.PRODUCTS", {"JM": get_product("JM")}):
+            run_models()
+
+        ensure_dirs.assert_called_once_with()
 
     @staticmethod
     def result(
