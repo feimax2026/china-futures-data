@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.product_config import PROJECT_ROOT, PRODUCTS, get_product
 from src.train_xgboost_compare import (
     DatasetResult,
+    ensure_dirs,
     evaluate_forecasts,
     prediction_column,
     product_configs,
@@ -89,6 +90,7 @@ def pd_timestamp_iso(value: Any) -> str:
 
 
 def run_models() -> dict[str, dict[int, DatasetResult]]:
+    ensure_dirs()
     results: dict[str, dict[int, DatasetResult]] = {}
     for product_code in PRODUCTS:
         main_config = product_configs(product_code)[0]
