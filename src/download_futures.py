@@ -13,6 +13,7 @@ FUTURES_SYMBOLS = {
     "SM0": "manganese_silicon",
     "JM0": "coking_coal",
     "I0": "iron_ore",
+    "CU0": "copper",
 }
 
 
