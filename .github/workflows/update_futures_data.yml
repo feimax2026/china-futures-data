@@ -3,11 +3,19 @@ name: Update China Futures Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 22 * * 1-5"
+    - cron: "7 18 * * *" # 03:07 Asia/Tokyo on the following day
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-china-futures-signals
+  cancel-in-progress: false
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -21,16 +29,35 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Refresh CSV files
+      - name: Refresh main-continuous CSV files
         run: python src/download_futures.py
 
-      - name: Build DuckDB database
-        run: python src/build_duckdb.py
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
 
-      - name: Upload data artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: china-futures-data
-          path: |
-            data/raw/*.csv
-            data/db/*.duckdb
+      - name: Export latest 5-day and 10-day signals
+        run: python src/export_latest_signals.py
+
+      - name: Validate signal payload
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("latest_signals.json").read_text(encoding="utf-8"))
+          assert payload["schema_version"] == 1
+          assert set(payload["products"]) == {"JM", "I", "SM", "CU"}
+          for product in payload["products"].values():
+              assert set(product["forecasts"]) == {"5", "10"}
+          print("latest_signals.json validated")
+          PY
+
+      - name: Commit latest signal payload
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add latest_signals.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Update XGBoost signals $(date -u +%F)"
+          git pull --rebase
+          git push
