@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-06-25T09:38:30+09:00",
+  "generated_at": "2026-06-25T09:44:20+09:00",
   "products": {
     "JM": {
       "name_zh": "焦煤",
@@ -8,23 +8,23 @@
       "close": 1245.5,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 0.9245802164077759,
+          "predicted_return_pct": 0.9897109270095825,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 719,
-            "avg_realized_return_pct": -0.3819800361626791,
-            "direction_accuracy": 0.47844228094575797
+            "samples": 713,
+            "avg_realized_return_pct": -0.2616260319179042,
+            "direction_accuracy": 0.48246844319775595
           }
         },
         "10": {
-          "predicted_return_pct": 3.7898600101470947,
+          "predicted_return_pct": 2.7864956855773926,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 707,
-            "avg_realized_return_pct": -0.7271522907273118,
-            "direction_accuracy": 0.4328147100424328
+            "samples": 714,
+            "avg_realized_return_pct": -0.6857996312259761,
+            "direction_accuracy": 0.42857142857142855
           }
         }
       }
@@ -35,23 +35,23 @@
       "close": 744.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.6325996518135071,
+          "predicted_return_pct": -0.6919586658477783,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 550,
-            "avg_realized_return_pct": -0.41606778703658925,
-            "direction_accuracy": 0.48
+            "samples": 549,
+            "avg_realized_return_pct": -0.42655106007203064,
+            "direction_accuracy": 0.48269581056466304
           }
         },
         "10": {
-          "predicted_return_pct": -0.782214343547821,
+          "predicted_return_pct": -0.7302407622337341,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 478,
-            "avg_realized_return_pct": -0.6887835834422458,
-            "direction_accuracy": 0.4895397489539749
+            "samples": 477,
+            "avg_realized_return_pct": -0.5614312172347681,
+            "direction_accuracy": 0.49266247379454925
           }
         }
       }
@@ -62,23 +62,23 @@
       "close": 5770.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 0.016957934945821762,
+          "predicted_return_pct": 0.025609666481614113,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 724,
-            "avg_realized_return_pct": -0.07089482354236708,
-            "direction_accuracy": 0.4558011049723757
+            "samples": 732,
+            "avg_realized_return_pct": -0.12243610475904985,
+            "direction_accuracy": 0.4576502732240437
           }
         },
         "10": {
-          "predicted_return_pct": -0.14865891635417938,
+          "predicted_return_pct": -0.13183379173278809,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 587,
-            "avg_realized_return_pct": -0.2858629904507429,
-            "direction_accuracy": 0.5212947189097104
+            "samples": 603,
+            "avg_realized_return_pct": -0.42935179711907046,
+            "direction_accuracy": 0.548922056384743
           }
         }
       }
@@ -89,23 +89,23 @@
       "close": 103550.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.057688452303409576,
+          "predicted_return_pct": -0.024594545364379883,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 665,
-            "avg_realized_return_pct": 0.2195471284131126,
-            "direction_accuracy": 0.43609022556390975
+            "samples": 676,
+            "avg_realized_return_pct": 0.22709399225334423,
+            "direction_accuracy": 0.4334319526627219
           }
         },
         "10": {
-          "predicted_return_pct": 0.0889686644077301,
-          "signal": 1,
-          "direction": "bullish",
+          "predicted_return_pct": -0.005781855434179306,
+          "signal": -1,
+          "direction": "bearish",
           "quality": {
-            "samples": 718,
-            "avg_realized_return_pct": 0.2130797939609015,
-            "direction_accuracy": 0.5431754874651811
+            "samples": 524,
+            "avg_realized_return_pct": 0.3967086257908437,
+            "direction_accuracy": 0.37213740458015265
           }
         }
       }
