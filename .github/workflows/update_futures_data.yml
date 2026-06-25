@@ -46,6 +46,9 @@ jobs:
 
           payload = json.loads(Path("latest_signals.json").read_text(encoding="utf-8"))
           assert payload["schema_version"] == 1
+          assert isinstance(payload["is_china_trading_day"], bool)
+          assert payload["report_date"]
+          assert payload["expected_source_date"]
           assert set(payload["products"]) == {"JM", "I", "SM", "CU"}
           for product in payload["products"].values():
               assert set(product["forecasts"]) == {"5", "10"}

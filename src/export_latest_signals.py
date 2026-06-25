@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
+
+import akshare as ak
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.product_config import PROJECT_ROOT, PRODUCTS, get_product
@@ -27,6 +30,7 @@ TOKYO = ZoneInfo("Asia/Tokyo")
 def build_payload(
     results: dict[str, dict[int, DatasetResult]],
     generated_at: str | None = None,
+    calendar_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     products: dict[str, Any] = {}
 
@@ -78,15 +82,36 @@ def build_payload(
             "forecasts": forecasts,
         }
 
+    metadata = calendar_metadata or current_trading_day_metadata()
     return {
         "schema_version": 1,
         "generated_at": generated_at or datetime.now(TOKYO).isoformat(timespec="seconds"),
+        **metadata,
         "products": products,
     }
 
 
 def pd_timestamp_iso(value: Any) -> str:
     return value.date().isoformat() if hasattr(value, "date") else str(value)
+
+
+def trading_day_metadata(report_date: date, trade_dates: list[date]) -> dict[str, Any]:
+    normalized = sorted(set(trade_dates))
+    previous = [trade_date for trade_date in normalized if trade_date < report_date]
+    if not previous:
+        raise ValueError(f"No Chinese trading day before {report_date.isoformat()}")
+    return {
+        "report_date": report_date.isoformat(),
+        "is_china_trading_day": report_date in normalized,
+        "expected_source_date": max(previous).isoformat(),
+    }
+
+
+def current_trading_day_metadata() -> dict[str, Any]:
+    report_date = datetime.now(TOKYO).date()
+    calendar = ak.tool_trade_date_hist_sina()
+    trade_dates = [pd.Timestamp(value).date() for value in calendar["trade_date"]]
+    return trading_day_metadata(report_date, trade_dates)
 
 
 def run_models() -> dict[str, dict[int, DatasetResult]]:

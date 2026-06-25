@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.export_latest_signals import build_payload, run_models
+from src.export_latest_signals import build_payload, run_models, trading_day_metadata
 from src.product_config import get_product
 
 
@@ -19,12 +19,22 @@ class ExportLatestSignalsTests(unittest.TestCase):
             }
         }
 
-        payload = build_payload(results, generated_at="2026-06-25T03:10:00+09:00")
+        payload = build_payload(
+            results,
+            generated_at="2026-06-25T03:10:00+09:00",
+            calendar_metadata={
+                "report_date": "2026-06-25",
+                "is_china_trading_day": True,
+                "expected_source_date": "2026-06-24",
+            },
+        )
         product = payload["products"]["JM"]
         five_day = product["forecasts"]["5"]
         ten_day = product["forecasts"]["10"]
 
         self.assertEqual(payload["schema_version"], 1)
+        self.assertTrue(payload["is_china_trading_day"])
+        self.assertEqual(payload["expected_source_date"], "2026-06-24")
         self.assertEqual(product["source_date"], "2026-06-24")
         self.assertEqual(product["name_zh"], "焦煤")
         self.assertEqual(five_day["direction"], "bullish")
@@ -51,6 +61,19 @@ class ExportLatestSignalsTests(unittest.TestCase):
             run_models()
 
         ensure_dirs.assert_called_once_with()
+
+    def test_trading_day_metadata_marks_holidays_and_previous_session(self) -> None:
+        metadata = trading_day_metadata(
+            pd.Timestamp("2026-10-01").date(),
+            [
+                pd.Timestamp("2026-09-29").date(),
+                pd.Timestamp("2026-09-30").date(),
+                pd.Timestamp("2026-10-09").date(),
+            ],
+        )
+
+        self.assertFalse(metadata["is_china_trading_day"])
+        self.assertEqual(metadata["expected_source_date"], "2026-09-30")
 
     @staticmethod
     def result(
