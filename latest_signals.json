@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-02T04:24:47+09:00",
-  "report_date": "2026-08-02",
-  "is_china_trading_day": false,
+  "generated_at": "2026-08-03T04:24:55+09:00",
+  "report_date": "2026-08-03",
+  "is_china_trading_day": true,
   "expected_source_date": "2026-07-31",
   "products": {
     "JM": {
@@ -16,7 +16,7 @@
           "direction": "bullish",
           "quality": {
             "samples": 731,
-            "avg_realized_return_pct": -0.2581789938217939,
+            "avg_realized_return_pct": -0.2581789938217938,
             "direction_accuracy": 0.4842681258549932
           }
         },
