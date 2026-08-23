@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T03:46:28+09:00",
-  "report_date": "2026-08-23",
-  "is_china_trading_day": false,
+  "generated_at": "2026-08-24T03:45:56+09:00",
+  "report_date": "2026-08-24",
+  "is_china_trading_day": true,
   "expected_source_date": "2026-08-21",
   "products": {
     "JM": {
