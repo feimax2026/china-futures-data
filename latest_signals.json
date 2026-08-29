@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T10:44:56+09:00",
-  "report_date": "2026-08-29",
+  "generated_at": "2026-08-30T05:53:04+09:00",
+  "report_date": "2026-08-30",
   "is_china_trading_day": false,
   "expected_source_date": "2026-08-28",
   "products": {
@@ -16,7 +16,7 @@
           "direction": "bullish",
           "quality": {
             "samples": 734,
-            "avg_realized_return_pct": -0.23330379608440427,
+            "avg_realized_return_pct": -0.23330379608440424,
             "direction_accuracy": 0.48637602179836514
           }
         },
@@ -80,7 +80,7 @@
           "direction": "bullish",
           "quality": {
             "samples": 660,
-            "avg_realized_return_pct": 0.04561628346795407,
+            "avg_realized_return_pct": 0.04561628346795403,
             "direction_accuracy": 0.47575757575757577
           }
         }
