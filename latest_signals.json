@@ -1,27 +1,27 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-31T06:00:41+09:00",
-  "report_date": "2026-08-31",
+  "generated_at": "2026-09-01T07:46:59+09:00",
+  "report_date": "2026-09-01",
   "is_china_trading_day": true,
-  "expected_source_date": "2026-08-28",
+  "expected_source_date": "2026-08-31",
   "products": {
     "JM": {
       "name_zh": "焦煤",
-      "source_date": "2026-08-28",
-      "close": 1629.0,
+      "source_date": "2026-08-31",
+      "close": 1729.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 2.591705799102783,
+          "predicted_return_pct": 0.9075756072998047,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 734,
-            "avg_realized_return_pct": -0.23330379608440424,
-            "direction_accuracy": 0.48637602179836514
+            "samples": 735,
+            "avg_realized_return_pct": -0.22106938094566095,
+            "direction_accuracy": 0.48707482993197276
           }
         },
         "10": {
-          "predicted_return_pct": 6.603707790374756,
+          "predicted_return_pct": 2.4199860095977783,
           "signal": 1,
           "direction": "bullish",
           "quality": {
@@ -34,21 +34,21 @@
     },
     "I": {
       "name_zh": "铁矿石",
-      "source_date": "2026-08-28",
-      "close": 723.0,
+      "source_date": "2026-08-31",
+      "close": 727.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.40802326798439026,
+          "predicted_return_pct": -0.2486741542816162,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 592,
-            "avg_realized_return_pct": -0.4188984123822424,
-            "direction_accuracy": 0.4797297297297297
+            "samples": 593,
+            "avg_realized_return_pct": -0.4156209596509277,
+            "direction_accuracy": 0.47892074198988194
           }
         },
         "10": {
-          "predicted_return_pct": 0.07387300580739975,
+          "predicted_return_pct": 0.296291708946228,
           "signal": 1,
           "direction": "bullish",
           "quality": {
@@ -61,54 +61,54 @@
     },
     "SM": {
       "name_zh": "锰硅",
-      "source_date": "2026-08-28",
-      "close": 6030.0,
+      "source_date": "2026-08-31",
+      "close": 6090.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 1.4556103944778442,
+          "predicted_return_pct": 1.1352920532226562,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 767,
-            "avg_realized_return_pct": -0.1003111258766921,
-            "direction_accuracy": 0.46284224250325945
+            "samples": 768,
+            "avg_realized_return_pct": -0.0974146157562894,
+            "direction_accuracy": 0.4635416666666667
           }
         },
         "10": {
-          "predicted_return_pct": 5.350809574127197,
+          "predicted_return_pct": 9.279343605041504,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 660,
-            "avg_realized_return_pct": 0.04561628346795403,
-            "direction_accuracy": 0.47575757575757577
+            "samples": 661,
+            "avg_realized_return_pct": 0.05183696651206555,
+            "direction_accuracy": 0.47655068078668683
           }
         }
       }
     },
     "CU": {
       "name_zh": "沪铜",
-      "source_date": "2026-08-28",
-      "close": 108900.0,
+      "source_date": "2026-08-31",
+      "close": 109100.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 0.02025965414941311,
+          "predicted_return_pct": 0.025161029770970345,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 591,
-            "avg_realized_return_pct": 0.03679672045537803,
-            "direction_accuracy": 0.5177664974619289
+            "samples": 592,
+            "avg_realized_return_pct": 0.038587156140991064,
+            "direction_accuracy": 0.518581081081081
           }
         },
         "10": {
-          "predicted_return_pct": 0.10739856213331223,
+          "predicted_return_pct": 0.1372624635696411,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 744,
-            "avg_realized_return_pct": 0.19518034634368836,
-            "direction_accuracy": 0.5456989247311828
+            "samples": 745,
+            "avg_realized_return_pct": 0.1943781060779183,
+            "direction_accuracy": 0.5449664429530201
           }
         }
       }
