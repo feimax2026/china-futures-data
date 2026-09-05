@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T05:43:53+09:00",
-  "report_date": "2026-09-05",
+  "generated_at": "2026-09-06T05:17:41+09:00",
+  "report_date": "2026-09-06",
   "is_china_trading_day": false,
   "expected_source_date": "2026-09-04",
   "products": {
@@ -80,7 +80,7 @@
           "direction": "bullish",
           "quality": {
             "samples": 665,
-            "avg_realized_return_pct": 0.06965746312830039,
+            "avg_realized_return_pct": 0.06965746312830044,
             "direction_accuracy": 0.47969924812030074
           }
         }
