@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T05:44:02+09:00",
-  "report_date": "2026-09-14",
+  "generated_at": "2026-09-15T06:46:46+09:00",
+  "report_date": "2026-09-15",
   "is_china_trading_day": true,
-  "expected_source_date": "2026-09-11",
+  "expected_source_date": "2026-09-14",
   "products": {
     "JM": {
       "name_zh": "焦煤",
-      "source_date": "2026-09-11",
-      "close": 1585.0,
+      "source_date": "2026-09-14",
+      "close": 1588.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 2.126677989959717,
+          "predicted_return_pct": 1.7269625663757324,
           "signal": 1,
           "direction": "bullish",
           "quality": {
@@ -21,34 +21,34 @@
           }
         },
         "10": {
-          "predicted_return_pct": 4.046950817108154,
+          "predicted_return_pct": 2.9283151626586914,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 743,
-            "avg_realized_return_pct": -0.6724632584312163,
-            "direction_accuracy": 0.4306864064602961
+            "samples": 744,
+            "avg_realized_return_pct": -0.6829932599489446,
+            "direction_accuracy": 0.43010752688172044
           }
         }
       }
     },
     "I": {
       "name_zh": "铁矿石",
-      "source_date": "2026-09-11",
-      "close": 718.0,
+      "source_date": "2026-09-14",
+      "close": 708.5,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.22864745557308197,
+          "predicted_return_pct": -0.25486522912979126,
           "signal": -1,
           "direction": "bearish",
           "quality": {
-            "samples": 601,
-            "avg_realized_return_pct": -0.39604412016979607,
-            "direction_accuracy": 0.47587354409317806
+            "samples": 602,
+            "avg_realized_return_pct": -0.40137293998399853,
+            "direction_accuracy": 0.47674418604651164
           }
         },
         "10": {
-          "predicted_return_pct": -0.14786818623542786,
+          "predicted_return_pct": -0.09354300051927567,
           "signal": -1,
           "direction": "bearish",
           "quality": {
@@ -61,11 +61,11 @@
     },
     "SM": {
       "name_zh": "锰硅",
-      "source_date": "2026-09-11",
-      "close": 5852.0,
+      "source_date": "2026-09-14",
+      "close": 5794.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.10846593976020813,
+          "predicted_return_pct": -0.005909993313252926,
           "signal": -1,
           "direction": "bearish",
           "quality": {
@@ -75,7 +75,7 @@
           }
         },
         "10": {
-          "predicted_return_pct": -0.3807913064956665,
+          "predicted_return_pct": -0.41574567556381226,
           "signal": -1,
           "direction": "bearish",
           "quality": {
@@ -88,11 +88,11 @@
     },
     "CU": {
       "name_zh": "沪铜",
-      "source_date": "2026-09-11",
-      "close": 108990.0,
+      "source_date": "2026-09-14",
+      "close": 107840.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.2437632977962494,
+          "predicted_return_pct": -0.10736440867185593,
           "signal": -1,
           "direction": "bearish",
           "quality": {
@@ -102,13 +102,13 @@
           }
         },
         "10": {
-          "predicted_return_pct": 0.05184387043118477,
+          "predicted_return_pct": 0.0016042075585573912,
           "signal": 1,
           "direction": "bullish",
           "quality": {
-            "samples": 754,
-            "avg_realized_return_pct": 0.21078395662946758,
-            "direction_accuracy": 0.5503978779840849
+            "samples": 755,
+            "avg_realized_return_pct": 0.20896619699485527,
+            "direction_accuracy": 0.5496688741721855
           }
         }
       }
