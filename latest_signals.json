@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-20T05:34:45+09:00",
-  "report_date": "2026-09-20",
-  "is_china_trading_day": false,
+  "generated_at": "2026-09-21T05:45:35+09:00",
+  "report_date": "2026-09-21",
+  "is_china_trading_day": true,
   "expected_source_date": "2026-09-18",
   "products": {
     "JM": {
@@ -70,7 +70,7 @@
           "direction": "bearish",
           "quality": {
             "samples": 518,
-            "avg_realized_return_pct": -0.048459382768344716,
+            "avg_realized_return_pct": -0.048459382768344744,
             "direction_accuracy": 0.5115830115830116
           }
         },
