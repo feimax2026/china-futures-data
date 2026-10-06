@@ -155,7 +155,7 @@ def collect(store: ResearchStore, *, now: datetime | None = None) -> dict:
     payload = {"schema_version": 1, "kind": "seven_product_radar", "generated_at": now.isoformat(),
                **metadata, "calendar": {"source": "Sina China trading dates", "coverage_end": dates[-1],
                 "trading_dates": dates, "observed_at": now.isoformat()}, "products": {}}
-    models = store.read_json("state/research/latest.json") or {}
+    models = store.read_json("state/research/latest.json", refresh=True) or {}
     def scan(code):
         try:
             quotes = bounded_ak_frame("quotes", QUOTE_NAMES[code])

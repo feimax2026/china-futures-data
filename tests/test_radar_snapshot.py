@@ -1,9 +1,14 @@
 import unittest
+import json
+import tempfile
+from pathlib import Path
+from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
 
 from src.radar_snapshot import contract_symbol, discover_contracts, indicators, select_contract
+from src.research_storage import ResearchStore
 
 
 class RadarSnapshotTests(unittest.TestCase):
@@ -42,6 +47,22 @@ class RadarSnapshotTests(unittest.TestCase):
         history = pd.DataFrame({"date": ["2026-10-07"], "hold": [2000], "close": [100], "volume": [100]})
         with self.assertRaises(ValueError):
             select_contract({"JM2701": history}, "2026-10-08")
+
+    def test_latest_model_state_refreshes_in_persistent_local_workspace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ResearchStore(Path(tmp), bucket="test")
+            key = "state/research/latest.json"
+            path = store.local_path(key)
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({"date": "old"}))
+            blob = Mock()
+            blob.exists.return_value = True
+            blob.download_to_filename.side_effect = lambda target: Path(target).write_text(json.dumps({"date": "new"}))
+            store._bucket = Mock()
+            store._bucket.blob.return_value = blob
+            self.assertEqual(store.read_json(key, refresh=True), {"date": "new"})
+            blob.exists.return_value = False
+            self.assertIsNone(store.read_json(key, refresh=True))
 
     def test_prior_windows_exclude_current_bar(self):
         frame, dates = self.bars()
