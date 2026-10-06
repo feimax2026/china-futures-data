@@ -117,13 +117,15 @@ class ResearchStore:
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
         return self.upload(path, key, immutable=False)
 
-    def read_json(self, key: str) -> dict | None:
+    def read_json(self, key: str, *, refresh: bool = False) -> dict | None:
         path = self.local_path(key)
-        if not path.exists() and self.bucket_name:
+        if self.bucket_name and (refresh or not path.exists()):
             blob = self.bucket.blob(key)
             if blob.exists():
                 path.parent.mkdir(parents=True, exist_ok=True)
                 blob.download_to_filename(str(path))
+            elif refresh:
+                return None  # A removed/missing remote state is not a valid cache.
         return json.loads(path.read_text()) if path.exists() else None
 
     def immutable_json(self, payload: dict, key: str) -> str:

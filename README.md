@@ -137,3 +137,8 @@ Run the same export locally with:
 2026-10 新增十品种期货 / AU、AG、CU、JM、SC 期权的独立研究与 GCS 归档。
 存储架构、自动更新、研究边界与操作说明见 [docs/research-platform.md](docs/research-platform.md)。
 现有四品种 `latest_signals.json` 消费接口保持不变。
+
+七品种商品机会雷达（AU/AG/CU/JM/I/SM/SF）另发布私有
+`state/radar/latest.json`，由云端晨报任务消费。`python src/radar_snapshot.py`
+按前一完整交易日的实际合约历史持仓排名选择观察合约，不把新交易日夜盘实时报价
+当成昨日日线。技术指标、报价和历史快照独立归档；不通过仓库推送账户凭证或交易指令。
