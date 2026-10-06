@@ -11,7 +11,7 @@ import requests
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("kind", choices=["main", "chain", "calendar"])
+    parser.add_argument("kind", choices=["main", "chain", "calendar", "quotes"])
     parser.add_argument("code")
     parser.add_argument("--day")
     args = parser.parse_args()
@@ -26,6 +26,8 @@ def main() -> None:
             frame = ak.tool_trade_date_hist_sina()
         elif args.kind == "main":
             frame = ak.futures_zh_daily_sina(symbol=args.code)
+        elif args.kind == "quotes":
+            frame = ak.futures_zh_realtime(symbol=args.code)
         else:
             frame = ak.get_futures_daily(start_date=args.day, end_date=args.day, market=args.code)
     print(frame.to_json(orient="split", date_format="iso"))
