@@ -7,11 +7,13 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-import akshare as ak
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from src.product_config import PROJECT_ROOT, PRODUCTS, get_product
+from src.product_config import PROJECT_ROOT, LEGACY_PRODUCTS, get_product
+from src.data_quality import validate_signal_payload
+from src.research_storage import ResearchStore
+from src.feed_access import bounded_ak_frame
 from src.train_xgboost_compare import (
     DatasetResult,
     ensure_dirs,
@@ -109,15 +111,15 @@ def trading_day_metadata(report_date: date, trade_dates: list[date]) -> dict[str
 
 def current_trading_day_metadata() -> dict[str, Any]:
     report_date = datetime.now(TOKYO).date()
-    calendar = ak.tool_trade_date_hist_sina()
+    calendar = bounded_ak_frame("calendar", "China")
     trade_dates = [pd.Timestamp(value).date() for value in calendar["trade_date"]]
     return trading_day_metadata(report_date, trade_dates)
 
 
-def run_models() -> dict[str, dict[int, DatasetResult]]:
+def run_models(product_codes=LEGACY_PRODUCTS) -> dict[str, dict[int, DatasetResult]]:
     ensure_dirs()
     results: dict[str, dict[int, DatasetResult]] = {}
-    for product_code in PRODUCTS:
+    for product_code in product_codes:
         main_config = product_configs(product_code)[0]
         results[product_code] = {
             horizon: run_dataset(main_config, horizon) for horizon in HORIZONS
@@ -127,6 +129,8 @@ def run_models() -> dict[str, dict[int, DatasetResult]]:
 
 def main() -> None:
     payload = build_payload(run_models())
+    validate_signal_payload(payload, set(LEGACY_PRODUCTS))
+    ResearchStore().archive_forecasts(payload, "legacy")
     OUTPUT_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

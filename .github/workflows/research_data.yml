@@ -1,0 +1,71 @@
+name: Collect Expanded Commodity Research
+
+on:
+  workflow_dispatch:
+    inputs:
+      trade_date:
+        description: "Optional historical YYYY-MM-DD (chains only)"
+        required: false
+        type: string
+      evaluate:
+        description: "Run last-year weekly purged baseline comparisons"
+        default: false
+        type: boolean
+  schedule:
+    - cron: "35 18 * * *" # 03:35 Asia/Tokyo, best-effort GitHub start time
+    - cron: "47 19 * * 0" # Weekly comparison: Monday 04:47 Tokyo
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: futures-research-data-lake
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RESEARCH_BUCKET: ${{ vars.RESEARCH_BUCKET }}
+      GOOGLE_CLOUD_PROJECT: ${{ vars.GCP_PROJECT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Authenticate to private research bucket without a stored key
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_RESEARCH_SERVICE_ACCOUNT }}
+      - name: Collect, validate and archive research data
+        env:
+          REQUESTED_DATE: ${{ inputs.trade_date }}
+          REQUESTED_EVALUATION: ${{ inputs.evaluate }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          args=()
+          if [ -n "$REQUESTED_DATE" ]; then
+            args+=(--trade-date "$REQUESTED_DATE" --chains-only)
+          elif [ "$REQUESTED_EVALUATION" = "true" ] || [ "$SCHEDULE" = "47 19 * * 0" ]; then
+            args+=(--evaluate)
+          fi
+          python -u src/research_pipeline.py "${args[@]}"
+      - name: Publish real-contract seven-product radar snapshot
+        if: always() && steps.auth.outcome == 'success' && !inputs.trade_date
+        run: python -u src/radar_snapshot.py
+      - name: Retain diagnostic report even if a source fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-collection-report
+          path: research_signals.json
+          if-no-files-found: warn
+          retention-days: 30

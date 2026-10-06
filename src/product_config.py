@@ -14,6 +14,13 @@ class ProductConfig:
     name_zh: str
     main_csv: str
     default_start_year: int = 2019
+    exchange: str = "DCE"
+    sector: str = "industrial"
+    power_exposure: str = "indirect"
+
+    @property
+    def continuous_symbol(self) -> str:
+        return f"{self.code}0"
 
     @property
     def lower_code(self) -> str:
@@ -41,6 +48,8 @@ PRODUCTS: dict[str, ProductConfig] = {
         name_zh="锰硅",
         main_csv="manganese_silicon_SM0.csv",
         default_start_year=2019,
+        exchange="CZCE",
+        power_exposure="smelting",
     ),
     "CU": ProductConfig(
         code="CU",
@@ -48,8 +57,18 @@ PRODUCTS: dict[str, ProductConfig] = {
         name_zh="沪铜",
         main_csv="copper_CU0.csv",
         default_start_year=2019,
+        exchange="SHFE",
     ),
+    "AU": ProductConfig("AU", "Gold", "黄金", "gold_AU0.csv", 2008, "SHFE", "precious_metals"),
+    "AG": ProductConfig("AG", "Silver", "白银", "silver_AG0.csv", 2012, "SHFE", "precious_metals"),
+    "SC": ProductConfig("SC", "Crude Oil", "原油", "crude_oil_SC0.csv", 2018, "INE", "energy"),
+    "AL": ProductConfig("AL", "Aluminium", "沪铝", "aluminium_AL0.csv", 2010, "SHFE", "nonferrous", "smelting"),
+    "SI": ProductConfig("SI", "Industrial Silicon", "工业硅", "industrial_silicon_SI0.csv", 2022, "GFEX", "silicon", "smelting"),
+    "SF": ProductConfig("SF", "Ferrosilicon", "硅铁", "ferrosilicon_SF0.csv", 2014, "CZCE", "ferroalloys", "smelting"),
 }
+
+# Keep the existing morning-brief contract stable while expanding research.
+LEGACY_PRODUCTS = ("JM", "I", "SM", "CU")
 
 
 def get_product(code: str) -> ProductConfig:
