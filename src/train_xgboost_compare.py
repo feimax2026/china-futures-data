@@ -233,6 +233,8 @@ def add_features(
     target_col = target_column(horizon)
     up_col = direction_column(horizon)
     out[target_col] = np.log(close.shift(-horizon) / close) * 100
+    # Compute this BEFORE feature filtering. A row gap must not shorten the purge.
+    out["label_end_date"] = out["date"].shift(-horizon)
     out[up_col] = (out[target_col] > 0).astype(int)
 
     out = out.replace([np.inf, -np.inf], np.nan)
@@ -278,9 +280,8 @@ def walk_forward_predict(
     start = prediction_start_position(model_data)
     while start < len(model_data):
         end = min(start + TEST_WINDOW_DAYS, len(model_data))
-        train_end = purged_train_end(start, horizon)
-        train = model_data.iloc[:train_end]
         test = model_data.iloc[start:end]
+        train = purged_training_rows(model_data.iloc[:start], test["date"].iloc[0])
         if len(train) < MIN_TRAIN_ROWS:
             start = end
             continue
@@ -292,6 +293,7 @@ def walk_forward_predict(
         block["dataset"] = config.name
         block[pred_col] = model.predict(test[feature_cols])
         block["train_end_date"] = train["date"].iloc[-1]
+        block["train_label_end_date"] = train["label_end_date"].max()
         block["test_window_start"] = test["date"].iloc[0]
         block["test_window_end"] = test["date"].iloc[-1]
         predictions.append(block)
@@ -334,6 +336,13 @@ def train_final_model(
     latest[pred_col] = model.predict(latest[feature_cols])
     latest["signal"] = np.where(latest[pred_col] > 0, 1, -1)
     return importance, latest[["date", "close", pred_col, "signal"]]
+
+
+def purged_training_rows(candidate: pd.DataFrame, test_start: pd.Timestamp) -> pd.DataFrame:
+    """Only labels fully known strictly before the first held-out observation."""
+    if "label_end_date" not in candidate:
+        raise ValueError("label_end_date must be computed on the unfiltered price calendar")
+    return candidate.loc[candidate["label_end_date"] < test_start].copy()
 
 
 def compute_metrics(

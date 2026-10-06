@@ -3,6 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import duckdb
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.product_config import PRODUCTS
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -10,11 +14,7 @@ RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 DB_DIR = PROJECT_ROOT / "data" / "db"
 DB_PATH = DB_DIR / "china_futures.duckdb"
 
-DATASETS = [
-    ("SM0", "manganese_silicon", RAW_DATA_DIR / "manganese_silicon_SM0.csv"),
-    ("JM0", "coking_coal", RAW_DATA_DIR / "coking_coal_JM0.csv"),
-    ("I0", "iron_ore", RAW_DATA_DIR / "iron_ore_I0.csv"),
-]
+DATASETS = [(product.continuous_symbol, product.lower_code, RAW_DATA_DIR / product.main_csv) for product in PRODUCTS.values()]
 
 
 def main() -> None:
@@ -40,6 +40,8 @@ def main() -> None:
         )
 
         for symbol, slug, csv_path in DATASETS:
+            if not csv_path.exists():
+                continue
             con.execute(
                 f"""
                 INSERT INTO futures_daily
@@ -78,6 +80,12 @@ def main() -> None:
 
         print(f"built database -> {DB_PATH}")
         print(con.sql("SELECT * FROM futures_metadata").df().to_string(index=False))
+        for kind in ("futures_chain", "options_chain", "power_external"):
+            paths = list((PROJECT_ROOT / "data" / "lake" / "snapshots" / kind).glob("**/*.parquet"))
+            if paths:
+                # Observed snapshots deliberately retain reruns and corrections.
+                glob = (PROJECT_ROOT / "data" / "lake" / "snapshots" / kind / "**" / "*.parquet").as_posix()
+                con.execute(f"CREATE OR REPLACE VIEW {kind}_observations AS SELECT * FROM read_parquet('{glob}', union_by_name=true, filename=true)")
 
 
 if __name__ == "__main__":

@@ -57,8 +57,7 @@ class ExportLatestSignalsTests(unittest.TestCase):
         product_configs.return_value = [SimpleNamespace()]
         run_dataset.return_value = SimpleNamespace()
 
-        with patch("src.export_latest_signals.PRODUCTS", {"JM": get_product("JM")}):
-            run_models()
+        run_models(product_codes=("JM",))
 
         ensure_dirs.assert_called_once_with()
 

@@ -355,28 +355,13 @@ def write_report(
 
 
 def main() -> None:
-    ensure_dirs()
-    raw = load_jm_csv()
-    feature_data, model_data, feature_cols = add_features(raw)
-    predictions = walk_forward_predict(model_data, feature_cols)
-    importance, latest_signal = train_final_model(feature_data, model_data, feature_cols)
-    metrics = compute_metrics(predictions)
-    plot_equity_curve(predictions)
-    plot_feature_importance(importance)
-    report_path = write_report(model_data, predictions, importance, latest_signal, metrics, feature_cols)
-
-    print(f"all features -> {ML_DIR / 'jm_xgboost_all_features.csv'}")
-    print(f"features -> {ML_DIR / 'jm_xgboost_features.csv'}")
-    print(f"predictions -> {ML_DIR / 'jm_xgboost_predictions.csv'}")
-    print(f"latest signal -> {ML_DIR / 'jm_xgboost_latest_signal.csv'}")
-    print(f"metrics -> {ML_DIR / 'jm_xgboost_backtest_metrics.csv'}")
-    print(f"report -> {report_path}")
-    print(
-        "summary -> "
-        f"rows={metrics.rows}, directional_accuracy={metrics.directional_accuracy:.3f}, "
-        f"strategy_total_return_pct={metrics.strategy_total_return_pct:.2f}, "
-        f"max_drawdown_pct={metrics.max_drawdown_pct:.2f}"
-    )
+    # Legacy functions above are archival only: their old row split was not purged.
+    import sys
+    sys.path.insert(0, str(PROJECT_ROOT))
+    from src.train_xgboost_compare import ensure_dirs as safe_dirs, run_dataset, product_configs
+    print("Deprecated JM entry point: using timestamp-purged main-series trainer")
+    safe_dirs()
+    run_dataset(product_configs("JM")[0], horizon=5)
 
 
 if __name__ == "__main__":

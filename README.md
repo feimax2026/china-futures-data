@@ -132,3 +132,8 @@ Run the same export locally with:
 .venv/bin/python src/download_futures.py
 .venv/bin/python src/export_latest_signals.py
 ```
+# 扩展商品研究平台
+
+2026-10 新增十品种期货 / AU、AG、CU、JM、SC 期权的独立研究与 GCS 归档。
+存储架构、自动更新、研究边界与操作说明见 [docs/research-platform.md](docs/research-platform.md)。
+现有四品种 `latest_signals.json` 消费接口保持不变。

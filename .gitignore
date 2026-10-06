@@ -8,3 +8,12 @@ data/raw/*.csv
 data/raw/contracts/
 data/processed/
 data/db/*.duckdb
+data/lake/
+data/registry/
+data/external/
+data/quality/
+data/raw/options/
+data/cache/
+data/forecasts/
+research_signals.json
+gha-creds-*.json
