@@ -11,6 +11,10 @@ on:
         description: "Run last-year weekly purged baseline comparisons"
         default: false
         type: boolean
+      radar_only:
+        description: "Only validate/publish seven-product radar using latest research models"
+        default: false
+        type: boolean
   schedule:
     - cron: "35 18 * * *" # 03:35 Asia/Tokyo, best-effort GitHub start time
     - cron: "47 19 * * 0" # Weekly comparison: Monday 04:47 Tokyo
@@ -46,6 +50,7 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_RESEARCH_SERVICE_ACCOUNT }}
       - name: Collect, validate and archive research data
+        if: '!inputs.radar_only'
         env:
           REQUESTED_DATE: ${{ inputs.trade_date }}
           REQUESTED_EVALUATION: ${{ inputs.evaluate }}
