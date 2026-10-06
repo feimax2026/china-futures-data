@@ -162,13 +162,22 @@ class ResearchPlatformTests(unittest.TestCase):
                 if exchange == "DCE":
                     raise RuntimeError("exchange timeout")
                 return pd.DataFrame({"product": ["AU"], "symbol": ["AU2612"], "settle": [900]})
+            from datetime import datetime, timezone
+            class PublicationClock:
+                calls = 0
+                @classmethod
+                def now(cls, _):
+                    cls.calls += 1
+                    return datetime(2026, 10, 6, 0 if cls.calls == 1 else 1, tzinfo=timezone.utc)
             with patch("src.research_pipeline.ResearchStore", return_value=store), patch("src.research_pipeline.PROJECT_ROOT", root), \
+                 patch("src.research_pipeline.datetime", PublicationClock), \
                  patch("src.research_pipeline.current_trading_day_metadata", return_value={"report_date": "2026-10-06", "expected_source_date": "2026-09-30"}), \
                  patch("src.research_pipeline.download_product", side_effect=download), patch("src.research_pipeline.fetch_chain", side_effect=chain), \
                  patch("src.research_pipeline.forecast_product", return_value={"source_date": "2026-09-30"}), \
                  patch("src.research_pipeline.fetch_options", side_effect=RuntimeError("JM unavailable")):
                 report = run(args)
             self.assertEqual(report["collection_status"], "partial")
+            self.assertTrue(report["generated_at"].startswith("2026-10-06T01:"))
             self.assertEqual(report["products"]["JM"]["status"], "failed")
             self.assertEqual(report["products"]["AU"]["status"], "ok")
             self.assertEqual(report["options"]["JM"]["status"], "failed")
