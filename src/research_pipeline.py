@@ -81,6 +81,9 @@ def run(args) -> dict:
     failed = any(item["status"] != "ok" for section in ("products", "collection", "options") for item in report[section].values())
     failed = failed or report.get("legacy_archive", {}).get("status") == "failed"
     report["collection_status"] = "partial" if failed else "complete"
+    # Timestamp actual publication after fitting/collection, not the start of a
+    # potentially long run. A forecast must not appear issued before training.
+    report["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="microseconds")
     store.archive_forecasts(report)
     store.publish_json(report, "state/research/latest.json")
     (PROJECT_ROOT / "research_signals.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
