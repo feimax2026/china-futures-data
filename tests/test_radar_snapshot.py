@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from src.radar_snapshot import contract_symbol, indicators, select_contract
+from src.radar_snapshot import contract_symbol, discover_contracts, indicators, select_contract
 
 
 class RadarSnapshotTests(unittest.TestCase):
@@ -21,13 +21,27 @@ class RadarSnapshotTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 contract_symbol(value, "JM", "2026-09-30")
 
-    def test_selection_filters_continuous_and_wrong_date(self):
+    def test_discovery_filters_continuous_and_future_date(self):
         quotes = pd.DataFrame({"symbol": ["JM0", "JM2701", "JM2611"],
                                "tradedate": ["2026-09-30"] * 3, "position": [9999, 1000, 200],
                                "volume": [100, 100, 100], "close": [100, 100, 100]})
-        self.assertEqual(select_contract(quotes, "JM", "2026-09-30")[0], "JM2701")
+        self.assertEqual(discover_contracts(quotes, "JM", "2026-09-30", "2026-10-08"), ["JM2611", "JM2701"])
         with self.assertRaises(ValueError):
-            select_contract(quotes, "JM", "2026-10-08")
+            discover_contracts(quotes, "JM", "2026-10-08", "2026-10-09")
+
+    def test_night_quotes_discover_but_do_not_rank_completed_day(self):
+        quotes = pd.DataFrame({"symbol": ["JM2701", "JM2611"], "tradedate": ["2026-10-09"] * 2,
+                               "position": [2000, 4000]})
+        symbols = discover_contracts(quotes, "JM", "2026-10-08", "2026-10-09")
+        histories = {s: pd.DataFrame({"date": ["2026-10-08", "2026-10-09"],
+            "hold": [3000 if s == "JM2701" else 1000, 2000 if s == "JM2701" else 4000],
+            "close": [100, 110], "volume": [100, 100]}) for s in symbols}
+        self.assertEqual(select_contract(histories, "2026-10-08"), "JM2701")
+
+    def test_stale_selection_history_fails_closed(self):
+        history = pd.DataFrame({"date": ["2026-10-07"], "hold": [2000], "close": [100], "volume": [100]})
+        with self.assertRaises(ValueError):
+            select_contract({"JM2701": history}, "2026-10-08")
 
     def test_prior_windows_exclude_current_bar(self):
         frame, dates = self.bars()

@@ -3,7 +3,7 @@
 ## 范围与仓库边界
 
 `china-futures-data` 负责采集、数据质量、研究预测与历史版本；
-`commodity-sentinel` 仍负责事件与日报消费。`JM_QUANT` 和 `my-futures-db`
+云端 `market-brief-job` 负责七品种变化式晨报；`commodity-sentinel` 保留独立收盘异常预警。`JM_QUANT` 和 `my-futures-db`
 保留历史，不迁移或删除。
 
 期货：JM、I、SM、CU、AU、AG、SC、AL、SI、SF。
@@ -31,6 +31,8 @@ forecasts/research/       当时实际生成的扩展研究预测及错误状态
 models/                  按品种/周锚点冻结的模型 JSON（不用 pickle）
 state/main/              可更新的历史工作缓存
 state/research/latest.json 最新研究输出（可能 partial，不是交易指令）
+state/radar/latest.json    七品种实际合约技术指标、交易日历与来源日期
+forecasts/radar/           实际出具的雷达快照（不追溯伪造历史信号）
 ```
 
 桶禁止公共访问、启用统一 IAM 与对象版本历史。研究服务账号只能读及新建
@@ -43,7 +45,10 @@ state/research/latest.json 最新研究输出（可能 partial，不是交易指
 保持 schema=1 和 JM/I/SM/CU 四品种，不破坏现有日报。
 新 `Collect Expanded Commodity Research` 独立采集全品种，计划东京 03:35；
 每周一另跑近一年、按周重训的 baseline 样本外评估。GitHub 定时可能延迟。
-新工作流合入 main 后定时才生效；开发分支可手动运行验证。
+该工作流已于2026-10-06合入main，默认分支定时生效。
+私有晨报仍在东京09:30生成；有变化才推Telegram，无变化保留完整扫描归档。
+雷达步骤独立于期权/全链成功与否，即使它们部分失败也尝试采集七品种。
+研究报告失败仍标为partial，不把焦煤期权缺数隐藏为成功。
 
 新增数据失败不会改写旧四品种 JSON，也不会把缺失品种填成最新行情。
 研究报告保留错误并标为 `partial`，工作流返回失败以提醒维护。
@@ -55,6 +60,7 @@ python src/research_pipeline.py
 python src/research_pipeline.py --evaluate
 python src/research_pipeline.py --trade-date 2026-09-30 --chains-only
 python src/build_duckdb.py
+python src/radar_snapshot.py
 python src/import_power_data.py your_power_data.csv
 ```
 
@@ -62,6 +68,12 @@ python src/import_power_data.py your_power_data.csv
 配置桶时还必须有 Google Application Default Credentials；GitHub 工作流由 OIDC 提供。
 `--allow-partial` 只用于本地诊断，生产不使用。
 历史链按交易日手动补采，不把“今天看到的合约列表”当成过去的挂牌列表。
+
+雷达使用新浪观察到的实际合约集合，不宣称覆盖交易所所有挂牌月份。
+报价仅用于识别合约，持仓排名、OHLC、ATR、量比均取前一完整交易日日线。
+早晨报价可能属于新交易日夜盘，不能用其持仓、涨跌或收盘字段替代前一日数据。
+对所有观察合约保留历史快照，再按前一日持仓排名；不能只靠连续合约代码选主力。
+选中合约最近65个交易日缺口或无效价格会令采集失败，晨报冻结状态、不发交易消息。
 
 ## 研究纪律
 
