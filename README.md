@@ -4,6 +4,9 @@ This project stores China futures daily data separately from any stock-data work
 
 ## Symbols
 
+- The daily sentinel universe is `JM`, `I`, `SF`, `SM`, `AU`, `AG`, `CU`; other products remain available for research.
+- SF/AU/AG use product-specific training windows and purged past-only parameter selection, with weekly out-of-sample comparisons to zero, momentum and Ridge baselines. Neutral thresholds scale with volatility. A forecast is not a trading win probability.
+- Real observed basis history is persisted at `state/basis/history-v1.json`. Radar uses prior-180-day basis-rate Z/rank statistics and displays missing or mismatched data explicitly.
 - `SM0`: manganese silicon continuous contract
 - `JM0`: coking coal continuous contract
 - `I0`: iron ore continuous contract
