@@ -9,10 +9,12 @@ import pandas as pd
 from src.product_config import PROJECT_ROOT
 
 
-def bounded_ak_frame(kind: str, code: str, day: str | None = None) -> pd.DataFrame:
+def bounded_ak_frame(kind: str, code: str, day: str | None = None, end_day: str | None = None) -> pd.DataFrame:
     command = [sys.executable, "-m", "src.feed_worker", kind, code]
     if day:
         command += ["--day", day]
+    if end_day:
+        command += ["--end-day", end_day]
     try:
         result = subprocess.run(command, cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=120, check=True)
     except subprocess.TimeoutExpired as error:

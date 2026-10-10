@@ -3,7 +3,7 @@ name: Update China Futures Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7 18 * * *" # 03:07 Asia/Tokyo on the following day
+    - cron: "7 18 * * 0-4" # Monday-Friday 03:07 Asia/Tokyo
 
 permissions:
   contents: write
@@ -50,7 +50,7 @@ jobs:
           assert isinstance(payload["is_china_trading_day"], bool)
           assert payload["report_date"]
           assert payload["expected_source_date"]
-          assert set(payload["products"]) == {"JM", "I", "SM", "CU"}
+          assert set(payload["products"]) == {"JM", "I", "SF", "SM", "AU", "AG", "CU"}
           for product in payload["products"].values():
               assert set(product["forecasts"]) == {"5", "10"}
           print("latest_signals.json validated")

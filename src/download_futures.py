@@ -9,7 +9,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.data_quality import validate_daily
-from src.product_config import PROJECT_ROOT, PRODUCTS, LEGACY_PRODUCTS, get_product
+from src.product_config import PROJECT_ROOT, PRODUCTS, SENTINEL_PRODUCTS, get_product
 from src.research_storage import ResearchStore
 from src.feed_access import bounded_ak_frame
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
@@ -36,7 +36,7 @@ def download_product(code: str, store: ResearchStore, expected_date: str | None 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--products", nargs="+", choices=sorted(PRODUCTS), default=list(LEGACY_PRODUCTS))
+    parser.add_argument("--products", nargs="+", choices=sorted(PRODUCTS), default=list(SENTINEL_PRODUCTS))
     args = parser.parse_args()
     store = ResearchStore()
     for code in args.products:

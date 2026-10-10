@@ -69,6 +69,7 @@ PRODUCTS: dict[str, ProductConfig] = {
 
 # Keep the existing morning-brief contract stable while expanding research.
 LEGACY_PRODUCTS = ("JM", "I", "SM", "CU")
+SENTINEL_PRODUCTS = ("JM", "I", "SF", "SM", "AU", "AG", "CU")
 
 
 def get_product(code: str) -> ProductConfig:

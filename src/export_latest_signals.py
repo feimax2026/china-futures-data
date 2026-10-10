@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from src.product_config import PROJECT_ROOT, LEGACY_PRODUCTS, get_product
+from src.product_config import PROJECT_ROOT, SENTINEL_PRODUCTS, get_product
 from src.data_quality import validate_signal_payload
 from src.research_storage import ResearchStore
 from src.feed_access import bounded_ak_frame
@@ -45,7 +45,7 @@ def build_payload(
         for horizon, result in sorted(horizon_results.items()):
             latest = result.latest_signal.iloc[-1]
             pred_col = prediction_column(horizon)
-            direction = "bullish" if int(latest["signal"]) > 0 else "bearish"
+            direction = {1: "bullish", -1: "bearish", 0: "neutral"}[int(latest["signal"])]
             quality = evaluate_forecasts(result.predictions, horizon)
             matching = quality.loc[quality["forecast"] == direction]
             quality_row = matching.iloc[0] if not matching.empty else None
@@ -57,6 +57,7 @@ def build_payload(
                 "predicted_return_pct": float(latest[pred_col]),
                 "signal": int(latest["signal"]),
                 "direction": direction,
+                "neutral_threshold_pct": float(latest.get("neutral_threshold_pct", 0)),
                 "quality": (
                     {
                         "samples": int(quality_row["samples"]),
@@ -116,7 +117,7 @@ def current_trading_day_metadata() -> dict[str, Any]:
     return trading_day_metadata(report_date, trade_dates)
 
 
-def run_models(product_codes=LEGACY_PRODUCTS) -> dict[str, dict[int, DatasetResult]]:
+def run_models(product_codes=SENTINEL_PRODUCTS) -> dict[str, dict[int, DatasetResult]]:
     ensure_dirs()
     results: dict[str, dict[int, DatasetResult]] = {}
     for product_code in product_codes:
@@ -129,7 +130,7 @@ def run_models(product_codes=LEGACY_PRODUCTS) -> dict[str, dict[int, DatasetResu
 
 def main() -> None:
     payload = build_payload(run_models())
-    validate_signal_payload(payload, set(LEGACY_PRODUCTS))
+    validate_signal_payload(payload, set(SENTINEL_PRODUCTS))
     ResearchStore().archive_forecasts(payload, "legacy")
     OUTPUT_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",

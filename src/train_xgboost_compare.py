@@ -14,6 +14,7 @@ from xgboost import XGBRegressor
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.product_config import PROJECT_ROOT, ProductConfig, get_product
+from src.model_selection import select_model, neutral_threshold
 
 
 matplotlib.use("Agg")
@@ -286,12 +287,14 @@ def walk_forward_predict(
             start = end
             continue
 
-        model = make_model()
-        model.fit(train[feature_cols], train[target_col])
+        model, selection = select_model(train, feature_cols, target_col, config.name.split("_")[0].upper())
 
         block = test[["date", "close", "daily_return_pct", target_col, up_col]].copy()
         block["dataset"] = config.name
         block[pred_col] = model.predict(test[feature_cols])
+        block["neutral_threshold_pct"] = neutral_threshold(test["volatility_20d_pct"], horizon)
+        block["max_depth"] = selection["max_depth"]
+        block["reg_lambda"] = selection["reg_lambda"]
         block["train_end_date"] = train["date"].iloc[-1]
         block["train_label_end_date"] = train["label_end_date"].max()
         block["test_window_start"] = test["date"].iloc[0]
@@ -303,7 +306,8 @@ def walk_forward_predict(
         raise ValueError(f"{config.name} does not have enough rows for walk-forward prediction.")
 
     result = pd.concat(predictions, ignore_index=True)
-    result["signal"] = np.where(result[pred_col] > 0, 1, -1)
+    result["signal"] = np.where(result[pred_col] > result.neutral_threshold_pct, 1,
+                                np.where(result[pred_col] < -result.neutral_threshold_pct, -1, 0))
     result["position"] = result["signal"].shift(1).fillna(0)
     cost_pct = TRANSACTION_COST_BPS / 100.0
     result["turnover"] = result["position"].diff().abs().fillna(result["position"].abs())
@@ -321,12 +325,12 @@ def train_final_model(
     model_data: pd.DataFrame,
     feature_cols: list[str],
     horizon: int = DEFAULT_FORWARD_DAYS,
+    product_code: str = "",
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     horizon = validate_horizon(horizon)
     target_col = target_column(horizon)
     pred_col = prediction_column(horizon)
-    model = make_model()
-    model.fit(model_data[feature_cols], model_data[target_col])
+    model, selection = select_model(model_data, feature_cols, target_col, product_code)
 
     importance = pd.DataFrame(
         {"feature": feature_cols, "importance": model.feature_importances_}
@@ -334,8 +338,12 @@ def train_final_model(
 
     latest = feature_data.iloc[[-1]][["date", "close"] + feature_cols].copy()
     latest[pred_col] = model.predict(latest[feature_cols])
-    latest["signal"] = np.where(latest[pred_col] > 0, 1, -1)
-    return importance, latest[["date", "close", pred_col, "signal"]]
+    latest["neutral_threshold_pct"] = neutral_threshold(latest["volatility_20d_pct"], horizon)
+    latest["signal"] = np.where(latest[pred_col] > latest.neutral_threshold_pct, 1,
+                                np.where(latest[pred_col] < -latest.neutral_threshold_pct, -1, 0))
+    latest["max_depth"] = selection["max_depth"]
+    latest["reg_lambda"] = selection["reg_lambda"]
+    return importance, latest[["date", "close", pred_col, "signal", "neutral_threshold_pct", "max_depth", "reg_lambda"]]
 
 
 def purged_training_rows(candidate: pd.DataFrame, test_start: pd.Timestamp) -> pd.DataFrame:
@@ -394,9 +402,11 @@ def evaluate_forecasts(
     pred_col = prediction_column(horizon)
     rows: list[dict[str, float | int | str]] = []
 
+    signals = predictions["signal"] if "signal" in predictions else np.sign(predictions[pred_col])
     for forecast, mask, correct_direction in [
-        ("bullish", predictions[pred_col] > 0, predictions[target_col] > 0),
-        ("bearish", predictions[pred_col] <= 0, predictions[target_col] < 0),
+        ("bullish", signals > 0, predictions[target_col] > 0),
+        ("bearish", signals < 0, predictions[target_col] < 0),
+        ("neutral", signals == 0, predictions[target_col].abs() <= predictions.get("neutral_threshold_pct", 0)),
     ]:
         sample = predictions.loc[mask]
         if sample.empty:
@@ -492,7 +502,7 @@ def run_dataset(
     feature_data, model_data, feature_cols = add_features(raw, config, horizon)
     predictions = walk_forward_predict(model_data, feature_cols, config, horizon)
     importance, latest_signal = train_final_model(
-        feature_data, model_data, feature_cols, horizon
+        feature_data, model_data, feature_cols, horizon, config.name.split("_")[0].upper()
     )
     metrics = compute_metrics(model_data, predictions, config, horizon)
     forecast_quality = evaluate_forecasts(predictions, horizon)

@@ -14,6 +14,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 from src.train_xgboost_compare import add_features, make_model, purged_training_rows, product_configs, target_column
 from src.research_storage import ResearchStore
+from src.model_selection import select_model, neutral_threshold, MODEL_VERSION
 
 
 def week_anchor(dates: pd.Series, asof: pd.Timestamp) -> pd.Timestamp:
@@ -22,26 +23,24 @@ def week_anchor(dates: pd.Series, asof: pd.Timestamp) -> pd.Timestamp:
     return dates.loc[same].min()
 
 
-def predict_block(train: pd.DataFrame, test: pd.DataFrame, features: list[str], target: str) -> dict[str, np.ndarray]:
+def predict_block(train: pd.DataFrame, test: pd.DataFrame, features: list[str], target: str, code: str = "") -> dict[str, np.ndarray]:
     ridge = make_pipeline(StandardScaler(), Ridge(alpha=10.0))
-    xgb = make_model()
+    xgb, _ = select_model(train, features, target, code)
     ridge.fit(train[features], train[target])
-    xgb.fit(train[features], train[target])
     return {"zero": np.zeros(len(test)), "momentum": test["return_5d_pct"].to_numpy(),
             "ridge": ridge.predict(test[features]), "xgboost": xgb.predict(test[features])}
 
 
-def frozen_model(train: pd.DataFrame, features: list[str], target: str) -> dict:
+def frozen_model(train: pd.DataFrame, features: list[str], target: str, code: str = "") -> dict:
     ridge = make_pipeline(StandardScaler(), Ridge(alpha=10.0))
     ridge.fit(train[features], train[target])
     scaler, regression = ridge.steps[0][1], ridge.steps[1][1]
-    xgb = make_model()
-    xgb.fit(train[features], train[target])
+    xgb, selection = select_model(train, features, target, code)
     return {"features": features, "scaler_mean": scaler.mean_.tolist(), "scaler_scale": scaler.scale_.tolist(),
             "ridge_coef": regression.coef_.tolist(), "ridge_intercept": float(regression.intercept_),
             "xgboost_json": xgb.get_booster().save_raw(raw_format="json").decode(), "train_rows": len(train),
             "train_label_end_date": train["label_end_date"].max().date().isoformat(),
-            "trained_at": datetime.now(timezone.utc).isoformat(timespec="microseconds")}
+            "trained_at": datetime.now(timezone.utc).isoformat(timespec="microseconds"), "selection": selection}
 
 
 def frozen_predict(model: dict, test: pd.DataFrame) -> dict:
@@ -67,10 +66,10 @@ def forecast_product(frame: pd.DataFrame, code: str, expected_date: str, store: 
         train = purged_training_rows(model_data.loc[model_data["date"] < anchor], anchor)
         if len(train) < 252:
             raise ValueError(f"{code}: insufficient training history")
-        key = f"models/{code}/anchor={anchor.date().isoformat()}/{horizon}d.json"
+        key = f"models/{MODEL_VERSION}/{code}/anchor={anchor.date().isoformat()}/{horizon}d.json"
         model = store.read_json(key) if store else None
         if model is None:
-            model = frozen_model(train, features, target_column(horizon))
+            model = frozen_model(train, features, target_column(horizon), code)
             if store:
                 store.immutable_json(model, key)
         if model["features"] != features or pd.Timestamp(model["train_label_end_date"]) >= anchor:
@@ -78,7 +77,11 @@ def forecast_product(frame: pd.DataFrame, code: str, expected_date: str, store: 
         predictions = frozen_predict(model, feature_data.iloc[[-1]])
         if not all(np.isfinite(value) for value in predictions.values()):
             raise ValueError(f"{code}: non-finite research forecast")
+        threshold = float(neutral_threshold(feature_data.iloc[-1]["volatility_20d_pct"], horizon))
+        direction = 1 if predictions["xgboost"] > threshold else -1 if predictions["xgboost"] < -threshold else 0
         forecasts[str(horizon)] = {"predicted_return_pct": predictions["xgboost"],
+                                   "signal": direction, "direction": {1: "bullish", -1: "bearish", 0: "neutral"}[direction],
+                                   "neutral_threshold_pct": threshold, "model_selection": model.get("selection"),
                                    "baselines_pct": predictions,
                                    "model_anchor_date": anchor.date().isoformat(),
                                    "train_label_end_date": model["train_label_end_date"],
@@ -109,7 +112,7 @@ def evaluate_product(frame: pd.DataFrame, code: str, horizon: int, max_test_rows
         if len(train) < 252:
             continue
         block = test[["date", "label_end_date", target]].copy()
-        predictions = predict_block(train, test, features, target)
+        predictions = predict_block(train, test, features, target, code)
         for model, values in predictions.items():
             block[model] = values
         block["model_anchor_date"] = anchor

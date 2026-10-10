@@ -11,9 +11,10 @@ import requests
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("kind", choices=["main", "chain", "calendar", "quotes"])
+    parser.add_argument("kind", choices=["main", "chain", "calendar", "quotes", "basis"])
     parser.add_argument("code")
     parser.add_argument("--day")
+    parser.add_argument("--end-day")
     args = parser.parse_args()
     original = requests.sessions.Session.request
     def bounded_request(self, method, url, **kwargs):
@@ -28,6 +29,12 @@ def main() -> None:
             frame = ak.futures_zh_daily_sina(symbol=args.code)
         elif args.kind == "quotes":
             frame = ak.futures_zh_realtime(symbol=args.code)
+        elif args.kind == "basis":
+            frame = ak.futures_spot_price_daily(start_day=args.day, end_day=args.end_day, vars_list=args.code.split(","))
+            if frame is None:
+                import pandas as pd
+                frame = pd.DataFrame()
+            frame = frame.rename(columns={"symbol": "var", "spot_price": "sp", "dominant_contract": "dom_symbol", "dominant_contract_price": "dom_price"})
         else:
             frame = ak.get_futures_daily(start_date=args.day, end_date=args.day, market=args.code)
     print(frame.to_json(orient="split", date_format="iso"))

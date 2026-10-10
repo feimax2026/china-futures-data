@@ -16,7 +16,7 @@ on:
         default: false
         type: boolean
   schedule:
-    - cron: "35 18 * * *" # 03:35 Asia/Tokyo, best-effort GitHub start time
+    - cron: "35 18 * * 0-4" # Monday-Friday 03:35 Asia/Tokyo
     - cron: "47 19 * * 0" # Weekly comparison: Monday 04:47 Tokyo
 
 permissions:

@@ -22,6 +22,7 @@ from src.export_latest_signals import trading_day_metadata
 from src.feed_access import bounded_ak_frame
 from src.product_config import PRODUCTS
 from src.research_storage import ResearchStore
+from src.basis_history import collect_basis, basis_statistics
 
 UNIVERSE = ("AU", "AG", "CU", "JM", "I", "SM", "SF")
 QUOTE_NAMES = {"AU": "黄金", "AG": "白银", "CU": "沪铜", "JM": "焦煤",
@@ -155,7 +156,19 @@ def collect(store: ResearchStore, *, now: datetime | None = None) -> dict:
     payload = {"schema_version": 1, "kind": "seven_product_radar", "generated_at": now.isoformat(),
                **metadata, "calendar": {"source": "Sina China trading dates", "coverage_end": dates[-1],
                 "trading_dates": dates, "observed_at": now.isoformat()}, "products": {}}
+    if not metadata["is_china_trading_day"]:
+        payload["collection_status"] = "complete"
+        payload["reason"] = "non_china_trading_day"
+        store.archive_forecasts(payload, "radar")
+        store.publish_json(payload, "state/radar/latest.json")
+        return payload
     models = store.read_json("state/research/latest.json", refresh=True) or {}
+    try:
+        basis = collect_basis(store, source_date)
+    except Exception as error:
+        payload["basis_collection_error"] = str(error)
+        cached = store.read_json("state/basis/history-v1.json") or {}
+        basis = {code: [r for r in cached.get("rows", []) if r["code"] == code] for code in UNIVERSE}
     def scan(code):
         try:
             quotes = bounded_ak_frame("quotes", QUOTE_NAMES[code])
@@ -168,6 +181,13 @@ def collect(store: ResearchStore, *, now: datetime | None = None) -> dict:
             symbol = select_contract(histories, source_date)
             frame = histories[symbol]
             stats = indicators(frame, source_date, dates)
+            stats["basis"] = basis_statistics(basis.get(code, []), source_date, symbol)
+            main = bounded_ak_frame("main", f"{code}0")
+            main_dates = pd.to_datetime(main.date).dt.strftime("%Y-%m-%d")
+            prior_oi = pd.to_numeric(main.loc[main_dates < source_date, "hold"], errors="coerce").dropna().tail(750)
+            current_oi = float(frame.loc[pd.to_datetime(frame.date).dt.strftime("%Y-%m-%d").eq(source_date), "hold"].iloc[0])
+            stats["oi_percentile"] = {"percentile": float((prior_oi.lt(current_oi).sum() + prior_oi.eq(current_oi).sum() * 0.5) / len(prior_oi) * 100) if len(prior_oi) >= 60 else None,
+                                      "samples": len(prior_oi), "window": 750, "value": current_oi, "benchmark": f"{code}0"}
             # Quote close is comparable ONLY when its trading date is source day.
             selected_quote = quotes.loc[quotes.symbol.map(lambda s: str(s).upper()).eq(symbol)]
             if not selected_quote.empty and str(selected_quote.iloc[0].tradedate) == source_date:
