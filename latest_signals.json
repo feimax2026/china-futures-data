@@ -1,49 +1,49 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-13T09:34:39+09:00",
-  "report_date": "2026-10-13",
+  "generated_at": "2026-10-14T07:40:18+09:00",
+  "report_date": "2026-10-14",
   "is_china_trading_day": true,
-  "expected_source_date": "2026-10-12",
+  "expected_source_date": "2026-10-13",
   "products": {
     "JM": {
       "name_zh": "焦煤",
-      "source_date": "2026-10-12",
-      "close": 1546.0,
+      "source_date": "2026-10-13",
+      "close": 1566.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.7696656584739685,
+          "predicted_return_pct": -0.4378335773944855,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 1.4195335973989063,
+          "neutral_threshold_pct": 1.4092884866623612,
           "quality": {
-            "samples": 938,
-            "avg_realized_return_pct": -0.29769608015747684,
-            "direction_accuracy": 0.21428571428571427
+            "samples": 939,
+            "avg_realized_return_pct": -0.28903598810138936,
+            "direction_accuracy": 0.21405750798722045
           }
         },
         "10": {
-          "predicted_return_pct": 0.24350203573703766,
+          "predicted_return_pct": 0.9865929484367371,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 2.007523665685802,
+          "neutral_threshold_pct": 1.9930348911341658,
           "quality": {
-            "samples": 855,
-            "avg_realized_return_pct": -0.4141870250983273,
-            "direction_accuracy": 0.17660818713450294
+            "samples": 856,
+            "avg_realized_return_pct": -0.4104505304830738,
+            "direction_accuracy": 0.1764018691588785
           }
         }
       }
     },
     "I": {
       "name_zh": "铁矿石",
-      "source_date": "2026-10-12",
-      "close": 683.0,
+      "source_date": "2026-10-13",
+      "close": 677.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.5899131298065186,
+          "predicted_return_pct": -0.8594554662704468,
           "signal": -1,
           "direction": "bearish",
-          "neutral_threshold_pct": 0.57637495206323,
+          "neutral_threshold_pct": 0.5523516226822516,
           "quality": {
             "samples": 244,
             "avg_realized_return_pct": -1.7316782545910503,
@@ -51,115 +51,115 @@
           }
         },
         "10": {
-          "predicted_return_pct": -0.8067841529846191,
+          "predicted_return_pct": -0.6136164665222168,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.8151172742199624,
+          "neutral_threshold_pct": 0.7811431559960267,
           "quality": {
-            "samples": 641,
-            "avg_realized_return_pct": 0.019965685120389653,
-            "direction_accuracy": 0.1794071762870515
+            "samples": 642,
+            "avg_realized_return_pct": 0.011428157607471182,
+            "direction_accuracy": 0.1791277258566978
           }
         }
       }
     },
     "SF": {
       "name_zh": "硅铁",
-      "source_date": "2026-10-12",
-      "close": 6016.0,
+      "source_date": "2026-10-13",
+      "close": 6048.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.295592725276947,
-          "signal": 0,
-          "direction": "neutral",
-          "neutral_threshold_pct": 0.8303198765390855,
+          "predicted_return_pct": -0.617723822593689,
+          "signal": -1,
+          "direction": "bearish",
+          "neutral_threshold_pct": 0.5856035305576284,
           "quality": {
-            "samples": 883,
-            "avg_realized_return_pct": -0.011933924735444744,
-            "direction_accuracy": 0.20951302378255945
+            "samples": 115,
+            "avg_realized_return_pct": -1.079209728744177,
+            "direction_accuracy": 0.6173913043478261
           }
         },
         "10": {
-          "predicted_return_pct": -1.3186912536621094,
-          "signal": -1,
-          "direction": "bearish",
-          "neutral_threshold_pct": 1.1742496305095285,
+          "predicted_return_pct": -0.4742361903190613,
+          "signal": 0,
+          "direction": "neutral",
+          "neutral_threshold_pct": 0.8281684550881652,
           "quality": {
-            "samples": 107,
-            "avg_realized_return_pct": -0.37337918909699874,
-            "direction_accuracy": 0.4953271028037383
+            "samples": 812,
+            "avg_realized_return_pct": -0.27914284440630577,
+            "direction_accuracy": 0.22536945812807882
           }
         }
       }
     },
     "SM": {
       "name_zh": "锰硅",
-      "source_date": "2026-10-12",
-      "close": 5862.0,
+      "source_date": "2026-10-13",
+      "close": 5858.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.027867130935192108,
+          "predicted_return_pct": -0.018434278666973114,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.6737343735371223,
+          "neutral_threshold_pct": 0.3223472128781077,
           "quality": {
-            "samples": 933,
-            "avg_realized_return_pct": 0.07413620989148863,
-            "direction_accuracy": 0.21757770632368703
+            "samples": 934,
+            "avg_realized_return_pct": 0.07526996055778537,
+            "direction_accuracy": 0.21734475374732334
           }
         },
         "10": {
-          "predicted_return_pct": -0.5311118960380554,
+          "predicted_return_pct": -0.1804780811071396,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.9528042884931391,
+          "neutral_threshold_pct": 0.45586780024538714,
           "quality": {
-            "samples": 736,
-            "avg_realized_return_pct": 0.1836836981965736,
-            "direction_accuracy": 0.2296195652173913
+            "samples": 737,
+            "avg_realized_return_pct": 0.18459755625642177,
+            "direction_accuracy": 0.23066485753052918
           }
         }
       }
     },
     "AU": {
       "name_zh": "黄金",
-      "source_date": "2026-10-12",
-      "close": 905.52,
+      "source_date": "2026-10-13",
+      "close": 907.02,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 0.04652879759669304,
+          "predicted_return_pct": -0.16006138920783997,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.6525045567361881,
+          "neutral_threshold_pct": 0.6332628648974803,
           "quality": {
             "samples": 909,
-            "avg_realized_return_pct": 0.37262551296603785,
+            "avg_realized_return_pct": 0.3726255129660378,
             "direction_accuracy": 0.24202420242024203
           }
         },
         "10": {
-          "predicted_return_pct": 0.3744998276233673,
+          "predicted_return_pct": 0.3711702525615692,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.9227807936465618,
+          "neutral_threshold_pct": 0.8955689320852577,
           "quality": {
-            "samples": 761,
-            "avg_realized_return_pct": 0.5650271929388113,
-            "direction_accuracy": 0.2720105124835742
+            "samples": 762,
+            "avg_realized_return_pct": 0.559194384039553,
+            "direction_accuracy": 0.27165354330708663
           }
         }
       }
     },
     "AG": {
       "name_zh": "白银",
-      "source_date": "2026-10-12",
-      "close": 14816.0,
+      "source_date": "2026-10-13",
+      "close": 14743.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": 0.697652280330658,
+          "predicted_return_pct": 0.2948479652404785,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 1.3542454782302535,
+          "neutral_threshold_pct": 1.3458001182047523,
           "quality": {
             "samples": 934,
             "avg_realized_return_pct": 0.6586592837606375,
@@ -167,10 +167,10 @@
           }
         },
         "10": {
-          "predicted_return_pct": 1.3887687921524048,
+          "predicted_return_pct": 1.6765429973602295,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 1.9151923220956626,
+          "neutral_threshold_pct": 1.9032487794084751,
           "quality": {
             "samples": 799,
             "avg_realized_return_pct": 1.4846938178790967,
@@ -181,29 +181,29 @@
     },
     "CU": {
       "name_zh": "沪铜",
-      "source_date": "2026-10-12",
-      "close": 110630.0,
+      "source_date": "2026-10-13",
+      "close": 110990.0,
       "forecasts": {
         "5": {
-          "predicted_return_pct": -0.02410409040749073,
+          "predicted_return_pct": 0.015072624199092388,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.540662089762474,
+          "neutral_threshold_pct": 0.5377868577606085,
           "quality": {
-            "samples": 1052,
-            "avg_realized_return_pct": 0.15948745365697306,
-            "direction_accuracy": 0.22433460076045628
+            "samples": 1053,
+            "avg_realized_return_pct": 0.16055883240436306,
+            "direction_accuracy": 0.2241215574548908
           }
         },
         "10": {
-          "predicted_return_pct": 0.07628132402896881,
+          "predicted_return_pct": -0.058210186660289764,
           "signal": 0,
           "direction": "neutral",
-          "neutral_threshold_pct": 0.7646116600030705,
+          "neutral_threshold_pct": 0.7605454679110631,
           "quality": {
-            "samples": 933,
-            "avg_realized_return_pct": 0.3138509017322614,
-            "direction_accuracy": 0.2647374062165059
+            "samples": 934,
+            "avg_realized_return_pct": 0.31429910367037645,
+            "direction_accuracy": 0.26552462526766596
           }
         }
       }
